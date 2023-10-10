@@ -1,0 +1,19 @@
+{
+    "name": "volk-lms/poc",
+    "description": "projeto desenvolvido para teste de aprovação para vaga de pleno",
+    "autoload": {
+        "psr-4": {
+            "VolkLms\\Poc\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Emerson Andrey",
+            "email": "emersonandrey_7@hotmail.com"
+        }
+    ],
+    "require": {
+        "doctrine/migrations": "^3.6",
+        "doctrine/data-fixtures": "^1.6"
+    }
+}
