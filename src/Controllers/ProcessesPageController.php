@@ -9,8 +9,9 @@ use VolkLms\Poc\Models\Status;
 use VolkLms\Poc\Models\Unit;
 use VolkLms\Poc\Views\ProccessPageView;
 
-class ProcessesPageController {
-  public function handle() {
+class ProcessesPageController implements Controller 
+{
+  public function handle($request) {
       $page = new ProccessPageView();
 
       $process = Process::createProcess([
