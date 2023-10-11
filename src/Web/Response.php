@@ -13,7 +13,19 @@ class Response
 
   static function json($data)
   {
-    return json_encode($data);
+    $statusCode = http_response_code();
+    if ($statusCode !== 204) {
+      header('Content-Type: application/json');
+      echo json_encode($data);
+    }
+  }
+
+  static function html($data)
+  {
+    $statusCode = http_response_code();
+    if ($statusCode !== 204) {
+      echo json_encode($data);
+    }
   }
 
 }

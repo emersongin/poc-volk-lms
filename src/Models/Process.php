@@ -4,7 +4,7 @@ namespace VolkLms\Poc\Models;
 
 class Process 
 {
-  private int $id;
+  private int $id = 0 | NULL;
   private string $name;
   private Person $person;
   private Status $status;
