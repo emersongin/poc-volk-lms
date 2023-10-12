@@ -1,8 +1,10 @@
 # DESAFIO VolkLMS
 
+
 🤝 ## Descrição de Projeto
 
 Desafio construído para atender ao teste prático da VolkLMS. No desafio será simular um serviço do sistema, onde foi necessário desenvolver um ambiente com o objetivo de exibir para os clientes um feedback e também como está o progresso de ações em lote geradas dentro da plataforma. com interface de gerenciamento, cadastro e integração com volkLMS.
+
 
 💻 ## Requisitos
 
@@ -10,9 +12,15 @@ Desafio construído para atender ao teste prático da VolkLMS. No desafio será 
     Composer
     MySQL (8.0.30 ou superior)
 
+
 ☕ ## Dificuldades
 
-1 - Foi encontrando dificuldade até o momento da integração com a API do VolkLMS devido a chamada no recurso de newQueue, mesmo repassando os dados que foi informado em documentação     a API informa que os dados estão incorretos com relação ao ID de ação da fila. parametro: informado acao_fila: [1,2,3,4,5,6,7], retorno:{ "error": "1", "message": "ID ação não           reconhecido"}
+1 - 
+Eu encontrei dificuldades durante a integração com a API do VolkLMS, especificamente ao utilizar o recurso "newQueue". Mesmo seguindo a documentação, recebi um erro indicando que o ID da ação da fila estava incorreto, com os seguintes parâmetros:
+
+Ação da fila informada: [1,2,3,4,5,6,7]
+Resposta da API: {"error": "1", "message": "ID da ação não reconhecido"}
+
  
 📫 ## Instalação
     
@@ -39,12 +47,12 @@ Desafio construído para atender ao teste prático da VolkLMS. No desafio será 
 6. faça o mesmo com o arquivo migrations-db.php, para pode rodar as migrations:
 
         exemplo:
-        'dbname' 	 => 'volklms_poc_db',
-        'user' 		 => 'root',
+        'dbname'   => 'volklms_poc_db',
+        'user'     => 'root',
         'password' => 'root',
-        'host' 		 => 'localhost',
+        'host'     => 'localhost',
         'port'     => 3306,
-        'driver' 	 => 'pdo_mysql',
+        'driver'   => 'pdo_mysql',
 
 7. em seguida rode o comando para as migrations(informa yes ou y):
 
