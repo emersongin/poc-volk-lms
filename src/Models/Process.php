@@ -10,7 +10,7 @@ class Process
   private Status $status;
   private Unit $unit;
   private QueueAction $queueAction;
-  private IntegrationQueue $integrationQueue;
+  private QueueIntegration $queueIntegration;
   private string $createdAt = '';
   private string $updatedAt = '';
 
@@ -20,16 +20,16 @@ class Process
     Status $status,
     Unit $unit,
     QueueAction $queueAction,
-    string | null $createdAt = null,
-    string | null $updatedAt = null
+    string $createdAt = null,
+    string $updatedAt = null
   ) {
     $this->name = $name;
     $this->person = $person;
     $this->status = $status;
     $this->unit = $unit;
     $this->queueAction = $queueAction;
-    $this->$createdAt = date("d/m/Y H:i:s", strtotime($createdAt ?? date("Y-m-d H:i:s")));
-    $this->$updatedAt = date("d/m/Y H:i:s", strtotime($updatedAt ?? date("Y-m-d H:i:s")));
+    $this->createdAt = date("d/m/Y H:i:s", strtotime($createdAt ?? date("Y-m-d H:i:s")));
+    $this->updatedAt = date("d/m/Y H:i:s", strtotime($updatedAt ?? date("Y-m-d H:i:s")));
   }
 
   static public function createProcess($data): Process 
@@ -40,8 +40,8 @@ class Process
       $data['status'],
       $data['unit'],
       $data['queueAction'],
-      $data['createdAt'] ?? null,
-      $data['updatedAt'] ?? null
+      $data['createdAt'],
+      $data['updatedAt']
     );
     return $process;
   }
@@ -53,10 +53,10 @@ class Process
     return $process;
   }
 
-  static public function createProcessWithIntegrationQueue($data): Process
+  static public function createProcessWithQueueIntegration($data): Process
   {
     $process = Process::createProcessWithId($data);
-    $process->integrationQueue = $data['integrationQueue']; 
+    $process->queueIntegration = $data['queueIntegration']; 
     return $process;
   }
 
@@ -116,14 +116,19 @@ class Process
     return $this->queueAction->getDescription();
   }
 
-  public function getIntegrationQueueId(): int
+  public function getQueueIntegrationId(): int
   {
-    return $this->integrationQueue->getQueueId();
+    return $this->queueIntegration->getQueueId();
   }
 
-  public function getIntegrationActionNumber(): int
+  public function getQueueIntegrationStatusId(): int
   {
-    return $this->integrationQueue->getActionNumber();
+    return $this->queueIntegration->getStatusId();
+  }
+
+  public function getQueueIntegrationActionIc(): int
+  {
+    return $this->queueIntegration->getActionId();
   }
 
   public function getCreatedAt(): string
@@ -134,6 +139,26 @@ class Process
   public function getUpdatedAt(): string
   {
     return $this->updatedAt;
+  }
+
+  public function getPerson(): Person
+  {
+    return $this->person;
+  }
+
+  public function getUnit(): Unit
+  {
+    return $this->unit;
+  }
+
+  public function getStatus(): Status
+  {
+    return $this->status;
+  }
+
+  public function getQueueAction(): QueueAction
+  {
+    return $this->queueAction;
   }
 
   public static function toDto(Process $process): array

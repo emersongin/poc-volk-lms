@@ -6,6 +6,7 @@ use VolkLms\Poc\Exceptions\DomainException;
 use VolkLms\Poc\Models\Person;
 use VolkLms\Poc\Models\Process;
 use VolkLms\Poc\Models\QueueAction;
+use VolkLms\Poc\Models\QueueIntegration;
 use VolkLms\Poc\Models\Status;
 use VolkLms\Poc\Models\Unit;
 
@@ -13,6 +14,23 @@ class PDOProcessRepository extends PDOAbstraction
 {
   private function mapProcess($dbProcess)
   {
+    if ($dbProcess['queue_id'] ?? null) {
+      return Process::createProcessWithQueueIntegration([
+        'id'               => $dbProcess['id'],
+        'name'             => $dbProcess['name'],
+        'person'           => new Person($dbProcess['person_id'], $dbProcess['person_fullname']),
+        'status'           => new Status($dbProcess['status_id'], $dbProcess['status_description']),
+        'unit'             => new Unit($dbProcess['unit_id'], $dbProcess['unit_number']),
+        'queueAction'      => new QueueAction($dbProcess['queue_action_id'], $dbProcess['queue_action_description']),
+        'createdAt'        => $dbProcess['created_at'],
+        'updatedAt'        => $dbProcess['updated_at'],
+        'queueIntegration' => new QueueIntegration(
+          $dbProcess['queue_integration_id'],
+          $dbProcess['queue_integration_status_id'],
+          $dbProcess['queue_integration_action_id'],
+        )
+      ]);
+    }
     return Process::createProcessWithId([
       'id'          => $dbProcess['id'],
       'name'        => $dbProcess['name'],
@@ -112,21 +130,25 @@ class PDOProcessRepository extends PDOAbstraction
         q.description as queue_action_description,
         p.name,
         p.created_at,
-        p.updated_at
+        p.updated_at,
+        pq.queue_id as queue_integration_id,
+        pq.queue_status_id as queue_integration_status_id,
+        pq.queue_action_id as queue_integration_action_id
       FROM processes p
       JOIN persons ps ON ps.id = p.person_id
       JOIN units u ON u.id = p.unit_id
       JOIN status s ON s.id = p.status_id
       JOIN queue_actions q ON q.id = p.queue_action_id
+      LEFT JOIN process_queues pq ON pq.process_id = p.id
       WHERE
-        p.id = :id";
+        p.id = :process_id";
 
     $dbProcess = $this->runSQL([
       'return'     => true,
       'multiple'   => false,
       'sql'        => $sql,
       'parameters' => [
-        'id' => $id
+        'process_id' => $id
       ]
     ]);
 
@@ -134,16 +156,7 @@ class PDOProcessRepository extends PDOAbstraction
 
     if (!$dbProcess) return null;
 
-    return Process::createProcessWithId([
-      'id'          => $dbProcess['id'],
-      'name'        => $dbProcess['name'],
-      'person'      => new Person($dbProcess['person_id'], $dbProcess['person_fullname']),
-      'status'      => new Status($dbProcess['status_id'], $dbProcess['status_description']),
-      'unit'        => new Unit($dbProcess['unit_id'], $dbProcess['unit_number']),
-      'queueAction' => new QueueAction($dbProcess['queue_action_id'], $dbProcess['queue_action_description']),
-      'createdAt'  => $dbProcess['created_at'],
-      'updatedAt'  => $dbProcess['updated_at'],
-    ]);
+    return $this->mapProcess($dbProcess);
   }
 
   public function createOrUpdate(Process $process): Process
@@ -166,8 +179,8 @@ class PDOProcessRepository extends PDOAbstraction
             status_id,
             queue_action_id,
             name
-        )
-          VALUES (
+          )
+            VALUES (
           :person_id,
           :unit_id,
           :status_id,
@@ -205,12 +218,13 @@ class PDOProcessRepository extends PDOAbstraction
             unit_id = :new_unit_id,
             status_id = :new_status_id,
             queue_action_id = :new_queue_action_id,
-            name = :new_name
+            name = :new_name,
+            updated_at = NOW()
         WHERE
             id = :process_id";
 
-        $update = $this->runSQL([
-          'return'     => true,
+        $updated = $this->runSQL([
+          'return'     => false,
           'multiple'   => false,
           'sql'        => $sql,
           'parameters' => [
@@ -222,6 +236,10 @@ class PDOProcessRepository extends PDOAbstraction
             'process_id'          => $id
           ]
         ]);
+
+        if (!$updated) {
+          throw new DomainException('unable to make a call', 422);
+        }
 
     }
     $this->commit();
@@ -238,7 +256,7 @@ class PDOProcessRepository extends PDOAbstraction
             WHERE
               p.id = :process_id";
 
-    $dbProcess = $this->runSQL([
+    $removed = $this->runSQL([
       'return'     => false,
       'multiple'   => false,
       'sql'        => $sql,
@@ -247,11 +265,11 @@ class PDOProcessRepository extends PDOAbstraction
       ]
     ]);
 
-    if (!$dbProcess) {
+    if (!$removed) {
       throw new DomainException('unable to make a call', 422);
     }
 
     $this->commit();
-    return $dbProcess;
+    return $removed;
   }
 }

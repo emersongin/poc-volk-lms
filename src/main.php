@@ -2,6 +2,7 @@
 
 use VolkLms\Poc\Controllers\CreateProcessPageController;
 use VolkLms\Poc\Controllers\IndexPageController;
+use VolkLms\Poc\Controllers\IntegrationVolkLMSController;
 use VolkLms\Poc\Web\Router;
 use VolkLms\Poc\Controllers\ProcessesPageController;
 use VolkLms\Poc\Controllers\RemoveProcessController;
@@ -9,11 +10,12 @@ use VolkLms\Poc\Controllers\SaveProcessController;
 use VolkLms\Poc\Exceptions\BadRequestException;
 use VolkLms\Poc\Exceptions\DomainException;
 use VolkLms\Poc\Exceptions\NotFoundException;
+use VolkLms\Poc\Exceptions\UnauthorizedException;
 use VolkLms\Poc\Web\Response;
 
-// Configuração CORS - Permitindo qualquer origem (não seguro, use com cautela)
+// Configuração CORS - Permitindo qualquer origem (não seguro)
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
+header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
 
@@ -35,6 +37,7 @@ try {
   $router->get('processos/cadastro', CreateProcessPageController::class);
   $router->post('processos/cadastro', SaveProcessController::class);
   $router->post('processos/remover', RemoveProcessController::class);
+  $router->post('processos/integracao', IntegrationVolkLMSController::class);
 
   $router->route();
 
@@ -42,9 +45,11 @@ try {
   if ($error instanceof PDOException) {
     echo "databaseErroMessage: " . $error->getMessage();
   } elseif ($error instanceof BadRequestException) {
-    Response::statusCode($error->getStatusCode() ?? 400)::json([ 'erroMessage' => $error->getMessage() ]);
+    Response::statusCode($error->getStatusCode())::json([ 'erroMessage' => $error->getMessage() ]);
+  } elseif ($error instanceof UnauthorizedException) {
+    Response::statusCode($error->getStatusCode())::json([ 'erroMessage' => $error->getMessage() ]);
   } elseif ($error instanceof DomainException) {
-    Response::statusCode($error->getStatusCode() ?? 401)::json([ 'erroMessage' => $error->getMessage() ]);
+    Response::statusCode($error->getStatusCode())::json([ 'erroMessage' => $error->getMessage() ]);
   } elseif ($error instanceof NotFoundException) {
     Response::statusCode(404)::json([ 'erroMessage' => "404 not found" ]);
   } else {

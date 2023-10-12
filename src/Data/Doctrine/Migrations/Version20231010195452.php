@@ -22,8 +22,11 @@ final class Version20231010195452 extends AbstractMigration
         $table = $schema->createTable('process_queues');
         $table->addColumn('process_id', 'integer', ['notnull' => true]);
         $table->addColumn('queue_id', 'integer', ['notnull' => true]);
-        $table->addColumn('action_number', 'integer', ['notnull' => false]);
+        $table->addColumn('queue_status_id', 'integer', ['notnull' => false]);
+        $table->addColumn('queue_action_id', 'integer', ['notnull' => false]);
         $table->addForeignKeyConstraint('processes', ['process_id'], ['id']);
+        $table->addForeignKeyConstraint('status', ['queue_status_id'], ['id']);
+        $table->addForeignKeyConstraint('queue_actions', ['queue_action_id'], ['id']);
     }
 
     public function down(Schema $schema): void

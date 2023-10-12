@@ -29,7 +29,7 @@ final class Version20231010191552 extends AbstractMigration
     public function postUp(Schema $schema): void
     {
         $status = [
-            ['description' => 'EM_ANDAMENTO'],
+            ['description' => 'EM ANDAMENTO'],
             ['description' => 'PROCESSADO'],
             ['description' => 'CANCELADO'],
         ];
