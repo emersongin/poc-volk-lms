@@ -23,7 +23,6 @@ class ProccessPageView extends Page {
 
   private function createPagination(array $params)
   {
-    $totalItems = $params['totalItems'];
     $totalPages = $params['totalPages'];
     $currentPage = $params['currentPage'];
     $searchParam = $params['searchParam'];
@@ -75,30 +74,32 @@ class ProccessPageView extends Page {
     return $pagination;
   }
 
-  public function output(array $processes, array $paginationParams) {
+  public function output(array $processes, array $params) {
     $headerTitle = 'Fila de processos';
-
+    $styles = '<link rel="stylesheet" href="/css/table.css">';
     $pageHeader = $this->renderTemplate($this->templateGlobalPath . '/header.php', [
-      'headerTitle' => $headerTitle
+      'headerTitle' => $headerTitle,
+      'styles' => $styles
     ]);
 
     $breadcrumb = file_get_contents($this->templateLocalPath . '/breadcrumb.php');
     $filterForm = file_get_contents($this->templateLocalPath . '/filter-form.php');
     $registerButton = file_get_contents($this->templateLocalPath . '/button.php');
     $header = $this->renderTemplate($this->templateLocalPath . '/header.php', [
-      'breadcrumb' => $breadcrumb,
-      'filterForm' => $filterForm,
-      'createButton' => $registerButton
+      'breadcrumb'    => $breadcrumb,
+      'filterForm'    => $filterForm,
+      'searchValue'   => $params['searchValue'],
+      'createButton'  => $registerButton
     ]);
 
     $rows = implode(array_map([$this, 'createTableRow'], $processes));
-    $paginationLinks = implode($this->createPagination($paginationParams));
+    $paginationLinks = implode($this->createPagination($params));
 
     $table = file_get_contents($this->templateLocalPath . '/table.php');
     $pagination = file_get_contents($this->templateLocalPath . '/pagination.php');
     $content = $this->renderTemplate($this->templateLocalPath . '/content.php', [
       'table'      => $table,
-      'rows'       => $rows,
+      'rows'       => count($processes) ? $rows : '<tr><td colspan="8">nenhum resultado foi encontrado.</td></tr>',
       'pagination' => $pagination,
       'links'      => $paginationLinks
     ]);

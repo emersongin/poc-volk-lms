@@ -17,7 +17,7 @@ class ProcessesPageController implements Controller
 
     $searchParam = $request->getParam('search') ?? '';
     $currentPage = $request->getParam('page') ?? 1;
-    $take = $request->getParam('take') ?? 20;
+    $take = $request->getParam('take') ?? 2;
     $skip = ($take * ($currentPage - 1));
     $totalItems = $processRepository->count([
       'searchParam' => $searchParam
@@ -29,15 +29,15 @@ class ProcessesPageController implements Controller
       'offset'      => $skip,
       'limit'       => $take
     ]);
-    $paginationParams = [
-      'totalItems'  => $totalItems,
+    $params = [
+      'searchValue' => $searchParam,
       'totalPages'  => $totalPages,
       'currentPage' => $currentPage,
       'searchParam' => $searchParam
     ];
 
     $page = new ProccessPageView();
-    $output = $page->output($processes, $paginationParams);
+    $output = $page->output($processes, $params);
     Response::statusCode(200)::html($output);
   }
 }

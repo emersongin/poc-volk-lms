@@ -10,7 +10,7 @@ class Process
   private Status $status;
   private Unit $unit;
   private QueueAction $queueAction;
-  private QueueIntegration $queueIntegration;
+  private QueueIntegration | null $queueIntegration = null;
   private string $createdAt = '';
   private string $updatedAt = '';
 
@@ -126,9 +126,14 @@ class Process
     return $this->queueIntegration->getStatusId();
   }
 
-  public function getQueueIntegrationActionIc(): int
+  public function getQueueIntegrationActionId(): int
   {
     return $this->queueIntegration->getActionId();
+  }
+
+  public function getQueueIntegrationUpdatedAt(): string
+  {
+    return $this->queueIntegration->getUpdatedAt();
   }
 
   public function getCreatedAt(): string
@@ -159,6 +164,11 @@ class Process
   public function getQueueAction(): QueueAction
   {
     return $this->queueAction;
+  }
+
+  public function getQueueIntegration(): QueueIntegration | null
+  {
+    return $this->queueIntegration;
   }
 
   public static function toDto(Process $process): array

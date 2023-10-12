@@ -66,17 +66,27 @@ class CreateProcessPageView extends Page {
     $processStatusId = isset($process) ? $process->getStatusId() : null;
     $processActionId = isset($process) ? $process->getQueueActionId() : null;
 
-    $headerTitle = 'Fila de processos';
+    $processUpdateAt = '';
+    $integrationUpdateAt = '';
 
+    if (isset($process)) {
+      $processUpdateAt = $process->getUpdatedAt();
+      $integrationUpdateAt = $process->getQueueIntegration() ? $process->getQueueIntegrationUpdatedAt() : null;
+    }
+
+    $headerTitle = 'process';
+    $styles = '';
     $pageHeader = $this->renderTemplate($this->templateGlobalPath . '/header.php', [
-      'headerTitle' => $headerTitle
+      'headerTitle' => $headerTitle,
+      'styles'      => $styles
     ]);
 
     $breadcrumb = file_get_contents($this->templateLocalPath . '/breadcrumb.php');
     $integrationButton = file_get_contents($this->templateLocalPath . '/integration-button.php');
     $header = $this->renderTemplate($this->templateLocalPath . '/header.php', [
-      'breadcrumb' => $breadcrumb,
-      'integration' => $processId ? $integrationButton : ''
+      'breadcrumb'  => $breadcrumb,
+      'integration' => $processUpdateAt !== $integrationUpdateAt ? $integrationButton : '',
+      'processId'   => $processId
     ]);
 
     $personOptions = $this->renderPersonSelectOptions($data['persons'], $processPersonId);
@@ -86,17 +96,17 @@ class CreateProcessPageView extends Page {
 
     $form = file_get_contents($this->templateLocalPath . '/form.php');
     $content = $this->renderTemplate($this->templateLocalPath . '/content.php', [
-      'form' => $form,
-      'processId' => $processId ?? '',
-      'name' => $processName ?? '',
-      'personOptions' => $personOptions,
-      'unitOptions' => $unitOptions,
-      'statusOptions' => $statusOptions,
+      'form'               => $form,
+      'processId'          => $processId ?? '',
+      'name'               => $processName ?? '',
+      'personOptions'      => $personOptions,
+      'unitOptions'        => $unitOptions,
+      'statusOptions'      => $statusOptions,
       'queueActionOptions' => $queueActionOptions,
-      'disabled' => $processId ? 'disabled' : ''
+      'disabled'           => $processId ? 'disabled' : ''
     ]);
 
-    $scripts = '';
+    $scripts = '<script type="module" src="/js/integrate-process-script.js"></script>';
     $body = $this->renderTemplate($this->templateGlobalPath . '/body.php', [
       'scripts' => $scripts,
     ]);

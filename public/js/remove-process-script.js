@@ -1,7 +1,7 @@
 import { request } from './helpers.js';
 
 const removeProcessModal = async processId => {
-  if (!confirm(`deseja realmente apagar o processo de código: ${processId}`)) return;
+  if (!confirm(`Deseja realizar integração de processo de código: ${processId}?`)) return;
   const removed = await request({
     type: 'POST',
     url: 'http://localhost/processos/remover',

@@ -105,7 +105,7 @@ class IntegrationVolkLMSController implements Controller
         'name'             => $process->getName(),
         'person'           => $process->getPerson(),
         'status'           => $process->getStatus(),
-        'unit'             => $process->getStatus(),
+        'unit'             => $process->getUnit(),
         'queueAction'      => $process->getQueueAction(),
         'createdAt'        => $process->getCreatedAt(),
         'updatedAt'        => $process->getUpdatedAt(),
@@ -113,6 +113,7 @@ class IntegrationVolkLMSController implements Controller
           $queueId,
           $process->getStatusId(),
           $process->getQueueActionId(),
+          $process->getUpdatedAt()
         )
       ]);
 

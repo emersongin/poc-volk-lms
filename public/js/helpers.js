@@ -10,12 +10,13 @@ export const request = ({ url, type, token, headers, data }) => {
   };
 
   return fetch(url, requestOptions)
-    .then(response => {
+    .then(async response => {
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
       if (response.status === 204) return true;
-      return response.json();
+      // console.log(await response.text());
+      return await response.json();
     })
     .catch(error => {
       if (error.message === 'Failed to fetch') {

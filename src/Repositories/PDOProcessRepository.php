@@ -28,6 +28,7 @@ class PDOProcessRepository extends PDOAbstraction
           $dbProcess['queue_integration_id'],
           $dbProcess['queue_integration_status_id'],
           $dbProcess['queue_integration_action_id'],
+          $dbProcess['queue_integration_updated_at']
         )
       ]);
     }
@@ -133,7 +134,8 @@ class PDOProcessRepository extends PDOAbstraction
         p.updated_at,
         pq.queue_id as queue_integration_id,
         pq.queue_status_id as queue_integration_status_id,
-        pq.queue_action_id as queue_integration_action_id
+        pq.queue_action_id as queue_integration_action_id,
+        pq.updated_at as queue_integration_updated_at
       FROM processes p
       JOIN persons ps ON ps.id = p.person_id
       JOIN units u ON u.id = p.unit_id

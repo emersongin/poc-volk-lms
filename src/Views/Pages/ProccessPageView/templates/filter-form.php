@@ -4,7 +4,7 @@
       <label class="visually-hidden" for="serachLabel">Filtro</label>
       <div class="input-group">
         <div class="input-group-text">Filtro</div>
-        <input type="text" name="search" class="form-control" id="serachLabel" placeholder="Informe o nome ou código de processo">
+        <input type="text" name="search" value="{{searchValue}}" class="form-control" id="serachLabel" placeholder="Informe o nome ou código de processo">
       </div>
     </div>
 
