@@ -2,7 +2,7 @@
 
 namespace VolkLms\Poc\Repositories;
 
-use DomainException;
+use VolkLms\Poc\Exceptions\DomainException;
 use VolkLms\Poc\Models\Person;
 use VolkLms\Poc\Models\Process;
 use VolkLms\Poc\Models\QueueAction;
@@ -227,5 +227,31 @@ class PDOProcessRepository extends PDOAbstraction
     $this->commit();
 
     return $process;
+  }
+
+  public function removeById(int $id): bool | null
+  {
+    $this->beginTransaction();
+
+    $sql = "DELETE FROM 
+              processes p
+            WHERE
+              p.id = :process_id";
+
+    $dbProcess = $this->runSQL([
+      'return'     => false,
+      'multiple'   => false,
+      'sql'        => $sql,
+      'parameters' => [
+        'process_id' => $id
+      ]
+    ]);
+
+    if (!$dbProcess) {
+      throw new DomainException('unable to make a call', 422);
+    }
+
+    $this->commit();
+    return $dbProcess;
   }
 }

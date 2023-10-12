@@ -42,6 +42,6 @@ abstract class PDOAbstraction
             }
             return $query->fetch(PDO::FETCH_ASSOC);
         }
-        return true;
+        return $query->rowCount();
     }
 }

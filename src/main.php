@@ -4,8 +4,11 @@ use VolkLms\Poc\Controllers\CreateProcessPageController;
 use VolkLms\Poc\Controllers\IndexPageController;
 use VolkLms\Poc\Web\Router;
 use VolkLms\Poc\Controllers\ProcessesPageController;
+use VolkLms\Poc\Controllers\RemoveProcessController;
 use VolkLms\Poc\Controllers\SaveProcessController;
 use VolkLms\Poc\Exceptions\BadRequestException;
+use VolkLms\Poc\Exceptions\DomainException;
+use VolkLms\Poc\Exceptions\NotFoundException;
 use VolkLms\Poc\Web\Response;
 
 try {
@@ -25,19 +28,22 @@ try {
   $router->get('processos', ProcessesPageController::class);
   $router->get('processos/cadastro', CreateProcessPageController::class);
   $router->post('processos/cadastro', SaveProcessController::class);
+  $router->post('processos/remover', RemoveProcessController::class);
 
   $router->route();
 
 } catch (Exception $error) {
   if ($error instanceof PDOException) {
-    echo "database error: " . $error->getMessage();
+    echo "databaseErroMessage: " . $error->getMessage();
   } elseif ($error instanceof BadRequestException) {
-    Response::statusCode(400)::json([ 'message' => "error: " . $error->getMessage() ]);
+    Response::statusCode($error->getStatusCode() ?? 400)::json([ 'erroMessage' => $error->getMessage() ]);
   } elseif ($error instanceof DomainException) {
-    Response::statusCode(401)::json([ 'message' => "error: " . $error->getMessage() ]);
+    Response::statusCode($error->getStatusCode() ?? 401)::json([ 'erroMessage' => $error->getMessage() ]);
+  } elseif ($error instanceof NotFoundException) {
+    Response::statusCode(404)::json([ 'erroMessage' => "404 not found" ]);
   } else {
-    Response::statusCode(500)::json([ 'message' => 'internal server error' ]);
-    // var_dump($error->getMessage());
+    Response::statusCode(500)::json([ 'erroMessage' => 'internal server error' ]);
+    var_dump($error->getMessage());
   }
 }
 exit;

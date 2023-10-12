@@ -3,6 +3,7 @@
 namespace VolkLms\Poc\Web;
 
 use PDO;
+use VolkLms\Poc\Exceptions\NotFoundException;
 
 class Router {
   private $getControllers = [];
@@ -36,9 +37,7 @@ class Router {
     } elseif ($method === 'POST' && array_key_exists($route, $this->postControllers)) {
       $controller = $this->postControllers[$route];
     } else {
-      http_response_code(404);
-      echo "Página não encontrada";
-      return;
+      throw new NotFoundException("not found");
     }
 
     $controllerInstance = new $controller();
