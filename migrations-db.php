@@ -1,9 +1,10 @@
 <?php
 
 return [
-	'dbname' => 'volklms_poc_db',
-	'user' => 'root',
+	'dbname' 	 => 'volklms_poc_db',
+	'user' 		 => 'root',
 	'password' => '',
-	'host' => 'localhost',
-	'driver' => 'pdo_mysql',
+	'host' 		 => 'localhost',
+	'port'     => 3306,
+	'driver' 	 => 'pdo_mysql',
 ];

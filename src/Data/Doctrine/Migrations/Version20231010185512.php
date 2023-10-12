@@ -33,7 +33,15 @@ final class Version20231010185512 extends AbstractMigration
             ['fullname' => 'Milton Ruiz'],
             ['fullname' => 'Luana Salgado'],
             ['fullname' => 'Eric Maciel'],
-            ['fullname' => 'Marília Medina']
+            ['fullname' => 'Marília Medina'],
+            ['fullname' => 'Cícero Nogueira'],
+            ['fullname' => 'Diego Leal'],
+            ['fullname' => 'Tereza Paschoal'],
+            ['fullname' => 'Nina Moura'],
+            ['fullname' => 'Iolanda Medeiros'],
+            ['fullname' => 'Evandro Yoshimura'],
+            ['fullname' => 'Alessandro Menezes'],
+            ['fullname' => 'Lucas Jardim']
         ];
 
         foreach ($persons as $person) {

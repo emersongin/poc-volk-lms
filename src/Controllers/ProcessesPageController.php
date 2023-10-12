@@ -17,7 +17,7 @@ class ProcessesPageController implements Controller
 
     $searchParam = $request->getParam('search') ?? '';
     $currentPage = $request->getParam('page') ?? 1;
-    $take = $request->getParam('take') ?? 2;
+    $take = $request->getParam('take') ?? 5;
     $skip = ($take * ($currentPage - 1));
     $totalItems = $processRepository->count([
       'searchParam' => $searchParam

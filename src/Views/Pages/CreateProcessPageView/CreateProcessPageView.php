@@ -86,7 +86,7 @@ class CreateProcessPageView extends Page {
     $header = $this->renderTemplate($this->templateLocalPath . '/header.php', [
       'breadcrumb'  => $breadcrumb,
       'integration' => $processUpdateAt !== $integrationUpdateAt ? $integrationButton : '',
-      'processId'   => $processId
+      'processId'   => $processId ?? ''
     ]);
 
     $personOptions = $this->renderPersonSelectOptions($data['persons'], $processPersonId);

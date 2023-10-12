@@ -30,9 +30,13 @@ final class Version20231010191145 extends AbstractMigration
     public function postUp(Schema $schema): void
     {
         $units = [
-            ['number' => '11.111.111'],
-            ['number' => '22.222.222'],
-            ['number' => '33.333.333'],
+            ['number' => '16.945.100/0001-20'],
+            ['number' => '23.844.870/0001-42'],
+            ['number' => '14.068.520/0001-40'],
+            ['number' => '86.805.590/0001-45'],
+            ['number' => '86.507.206/0001-28'],
+            ['number' => '69.199.556/0001-55'],
+            ['number' => '25.140.200/0001-70'],
         ];
 
         foreach ($units as $unit) {
