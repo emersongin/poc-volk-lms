@@ -103,7 +103,10 @@ class ProccessPageView extends Page {
       'links'      => $paginationLinks
     ]);
 
-    $body = file_get_contents($this->templateGlobalPath . '/body.php');
+    $scripts = '<script type="module" src="/js/remove-process-script.js"></script>';
+    $body = $this->renderTemplate($this->templateGlobalPath . '/body.php', [
+      'scripts' => $scripts,
+    ]);
 
     $page[] = $pageHeader;
     $page[] = $header;

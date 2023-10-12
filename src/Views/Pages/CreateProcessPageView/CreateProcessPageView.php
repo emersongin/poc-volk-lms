@@ -2,7 +2,6 @@
 
 namespace VolkLms\Poc\Views\Pages\CreateProcessPageView;
 
-use DomainException;
 use VolkLms\Poc\Models\Process;
 use VolkLms\Poc\Views\Pages\Page;
 
@@ -97,7 +96,10 @@ class CreateProcessPageView extends Page {
       'disabled' => $processId ? 'disabled' : ''
     ]);
 
-    $body = file_get_contents($this->templateGlobalPath . '/body.php');
+    $scripts = '';
+    $body = $this->renderTemplate($this->templateGlobalPath . '/body.php', [
+      'scripts' => $scripts,
+    ]);
 
     $page[] = $pageHeader;
     $page[] = $header;

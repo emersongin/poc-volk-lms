@@ -11,6 +11,12 @@ use VolkLms\Poc\Exceptions\DomainException;
 use VolkLms\Poc\Exceptions\NotFoundException;
 use VolkLms\Poc\Web\Response;
 
+// Configuração CORS - Permitindo qualquer origem (não seguro, use com cautela)
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Credentials: true");
+
 try {
   $dbConfig = require ABS_PATH . '/src/Config/dbConfig.php';
   $host = $dbConfig['host']; 

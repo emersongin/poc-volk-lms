@@ -6,11 +6,11 @@
   <td scope="row">{{status}}</td>
   <td scope="row">{{createdAt}}</td>
   <td scope="row">{{updatedAt}}</td>
-  <td scope="row" class="d-flex justify-content-center align-items-center gap-1">
-    <a href="processos/cadastro?processId={{id}}">
+  <td scope="row" class="d-flex justify-content-center align-items-center gap-3">
+    <a class="link-secondary link-opacity-75-hover fs-5" style="cursor: pointer" href="processos/cadastro?processId={{id}}">
       <i class="bi bi-search"></i>
     </a>
-    <a href="">
+    <a class="link-secondary link-opacity-75-hover fs-5" style="cursor: pointer" onclick="removeProcessModal('{{id}}');">
       <i class="bi bi-x-circle"></i>
     </a>
   </td>
