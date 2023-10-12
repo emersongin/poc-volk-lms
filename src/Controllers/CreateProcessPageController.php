@@ -2,7 +2,9 @@
 
 namespace VolkLms\Poc\Controllers;
 
+use DomainException;
 use PDO;
+use VolkLms\Poc\Models\Process;
 use VolkLms\Poc\Repositories\PDOPersonRepository;
 use VolkLms\Poc\Repositories\PDOProcessRepository;
 use VolkLms\Poc\Repositories\PDOQueueActionRepository;
@@ -40,6 +42,7 @@ class CreateProcessPageController implements Controller
       'status'  => $status,
       'actions' => $actions
     ], $process ?? null);
+    
     Response::statusCode(200)::html($output);
   }
 }

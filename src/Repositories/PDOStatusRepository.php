@@ -8,7 +8,13 @@ class PDOStatusRepository extends PDOAbstraction
   {
     $this->beginTransaction();
 
-    $sql = "SELECT id, description FROM status ORDER BY description";
+    $sql = "SELECT 
+              s.id, 
+              s.description 
+            FROM 
+              status s 
+            ORDER BY 
+              description";
 
     $persons = $this->runSQL([
       'return'     => true,

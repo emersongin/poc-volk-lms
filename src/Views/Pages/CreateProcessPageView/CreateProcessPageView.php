@@ -2,6 +2,7 @@
 
 namespace VolkLms\Poc\Views\Pages\CreateProcessPageView;
 
+use DomainException;
 use VolkLms\Poc\Models\Process;
 use VolkLms\Poc\Views\Pages\Page;
 
@@ -38,6 +39,7 @@ class CreateProcessPageView extends Page {
     if(count($status)) {
       foreach ($status as $key => $state) {
         $selected = $id == $state['id'] ? 'selected' : '';
+
         $options .= "<option value='{$state['id']}' {$selected}>{$state['description']}</option>";
       }
     }

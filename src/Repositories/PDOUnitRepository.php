@@ -8,7 +8,13 @@ class PDOUnitRepository extends PDOAbstraction
   {
     $this->beginTransaction();
 
-    $sql = "SELECT id, number FROM units ORDER BY number";
+    $sql = "SELECT 
+              u.id, 
+              u.number 
+            FROM 
+              units u 
+            ORDER BY 
+              number";
 
     $persons = $this->runSQL([
       'return'     => true,

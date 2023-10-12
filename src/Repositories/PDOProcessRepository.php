@@ -2,12 +2,12 @@
 
 namespace VolkLms\Poc\Repositories;
 
+use DomainException;
 use VolkLms\Poc\Models\Person;
 use VolkLms\Poc\Models\Process;
 use VolkLms\Poc\Models\QueueAction;
 use VolkLms\Poc\Models\Status;
 use VolkLms\Poc\Models\Unit;
-use VolkLms\Poc\Web\Response;
 
 class PDOProcessRepository extends PDOAbstraction
 {
@@ -17,8 +17,8 @@ class PDOProcessRepository extends PDOAbstraction
       'id'          => $dbProcess['id'],
       'name'        => $dbProcess['name'],
       'person'      => new Person($dbProcess['person_id'], $dbProcess['person_fullname']),
-      'status'      => new Status($dbProcess['unit_id'], $dbProcess['unit_number']),
-      'unit'        => new Unit($dbProcess['status_id'], $dbProcess['status_description']),
+      'status'      => new Status($dbProcess['status_id'], $dbProcess['status_description']),
+      'unit'        => new Unit($dbProcess['unit_id'], $dbProcess['unit_number']),
       'queueAction' => new QueueAction($dbProcess['queue_action_id'], $dbProcess['queue_action_description']),
       'createdAt'   => $dbProcess['created_at'],
       'updatedAt'   => $dbProcess['updated_at'],
@@ -138,8 +138,8 @@ class PDOProcessRepository extends PDOAbstraction
       'id'          => $dbProcess['id'],
       'name'        => $dbProcess['name'],
       'person'      => new Person($dbProcess['person_id'], $dbProcess['person_fullname']),
-      'status'      => new Status($dbProcess['unit_id'], $dbProcess['unit_number']),
-      'unit'        => new Unit($dbProcess['status_id'], $dbProcess['status_description']),
+      'status'      => new Status($dbProcess['status_id'], $dbProcess['status_description']),
+      'unit'        => new Unit($dbProcess['unit_id'], $dbProcess['unit_number']),
       'queueAction' => new QueueAction($dbProcess['queue_action_id'], $dbProcess['queue_action_description']),
       'createdAt'  => $dbProcess['created_at'],
       'updatedAt'  => $dbProcess['updated_at'],
@@ -148,88 +148,84 @@ class PDOProcessRepository extends PDOAbstraction
 
   public function createOrUpdate(Process $process): Process
   {
-    try {
-      $this->beginTransaction();
+    $this->beginTransaction();
 
-      $id = $process->getId();
-      $name = $process->getName();
-      $personId = $process->getPersonId();
-      $unitId = $process->getUnitId();
-      $statusId = $process->getStatusId();
-      $queueActionId = $process->getQueueActionId();
-  
-      if (!$id) {
-        $sql = 
-          "INSERT INTO processes
-            (
-              person_id,
-              unit_id,
-              status_id,
-              queue_action_id,
-              name
-          )
-            VALUES (
-            :person_id,
-            :unit_id,
-            :status_id,
-            :queue_action_id,
-            :name
-          )";
+    $id = $process->getId();
+    $name = $process->getName();
+    $personId = $process->getPersonId();
+    $unitId = $process->getUnitId();
+    $statusId = $process->getStatusId();
+    $queueActionId = $process->getQueueActionId();
 
-        $this->runSQL([
-          'return'     => false,
+    if (!$id) {
+      $sql = 
+        "INSERT INTO processes
+          (
+            person_id,
+            unit_id,
+            status_id,
+            queue_action_id,
+            name
+        )
+          VALUES (
+          :person_id,
+          :unit_id,
+          :status_id,
+          :queue_action_id,
+          :name
+        )";
+
+      $this->runSQL([
+        'return'     => false,
+        'multiple'   => false,
+        'sql'        => $sql,
+        'parameters' => [
+          'person_id'       => $personId,
+          'unit_id'         => $unitId,
+          'status_id'       => $statusId,
+          'queue_action_id' => $queueActionId,
+          'name'            => $name
+        ]
+      ]);
+
+      $process = Process::createProcessWithId([
+        'id'          => $this->lastInsertId(),
+        'name'        => $name,
+        'person'      => new Person($personId, ''),
+        'status'      => new Status($unitId, ''),
+        'unit'        => new Unit($statusId, ''),
+        'queueAction' => new QueueAction($queueActionId, '')
+      ]);
+
+    } else {
+      $sql = 
+        "UPDATE processes
+        SET
+            person_id = :new_person_id,
+            unit_id = :new_unit_id,
+            status_id = :new_status_id,
+            queue_action_id = :new_queue_action_id,
+            name = :new_name
+        WHERE
+            id = :process_id";
+
+        $update = $this->runSQL([
+          'return'     => true,
           'multiple'   => false,
           'sql'        => $sql,
           'parameters' => [
-            'person_id'       => $personId,
-            'unit_id'         => $unitId,
-            'status_id'       => $statusId,
-            'queue_action_id' => $queueActionId,
-            'name'            => $name
+            'new_person_id'       => $personId,
+            'new_unit_id'         => $unitId,
+            'new_status_id'       => $statusId,
+            'new_queue_action_id' => $queueActionId,
+            'new_name'            => $name,
+            'process_id'          => $id
           ]
         ]);
 
-        $process = Process::createProcessWithId([
-          'id'          => $this->lastInsertId(),
-          'name'        => $name,
-          'person'      => new Person($personId, ''),
-          'status'      => new Status($unitId, ''),
-          'unit'        => new Unit($statusId, ''),
-          'queueAction' => new QueueAction($queueActionId, '')
-        ]);
-
-      } else {
-        $sql = 
-          "UPDATE processes
-          SET
-              person_id = :new_person_id,
-              unit_id = :new_unit_id,
-              status_id = :new_status_id,
-              queue_action_id = :new_queue_action_id,
-              name = :new_name
-          WHERE
-              id = :process_id";
-
-          $this->runSQL([
-            'return'     => false,
-            'multiple'   => false,
-            'sql'        => $sql,
-            'parameters' => [
-              'new_person_id'       => $personId,
-              'new_unit_id'         => $unitId,
-              'new_status_id'       => $statusId,
-              'new_queue_action_id' => $queueActionId,
-              'new_name'            => $name,
-              'process_id'          => $id
-            ]
-          ]);
-      }
-      $this->commit();
-
-      return $process;
-    } catch (\Throwable $th) {
-      Response::statusCode(500)::json($th);
-      exit;
     }
+    $this->commit();
+
+    return $process;
   }
 }

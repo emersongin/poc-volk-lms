@@ -2,6 +2,7 @@
 
 namespace VolkLms\Poc\Controllers;
 
+use Exception;
 use PDO;
 use VolkLms\Poc\Models\Process;
 use VolkLms\Poc\Repositories\PDOProcessRepository;
@@ -12,6 +13,11 @@ class IndexPageController implements Controller
 {
   public function handle(Request $request, PDO $db) 
   {
+    $processId = $request->getParam('processId');
+    $processRepository = new PDOProcessRepository($db);
+    $process = $processRepository->findById($processId);
+
+    Response::statusCode(200)::json(Process::toDto($process));
     // $processRepository = new PDOProcessRepository($db);
     // $searchParam = $request->getParam('searchParam') ?? '';
     // $currentPage = $request->getParam('currentPage') ?? 1;
@@ -34,7 +40,7 @@ class IndexPageController implements Controller
     // ];
     // Response::statusCode(200)::addHeaders($headers)::json($processDtos);
 
-    header("Location: /processos");
+    // header("Location: /processos");
   }
 
 }

@@ -40,18 +40,4 @@ class ProcessesPageController implements Controller
     $output = $page->output($processes, $paginationParams);
     Response::statusCode(200)::html($output);
   }
-
-  private function mapProcessDto(Process $process)
-  {
-    return [
-      'id'          => $process->getId(),
-      'name'        => $process->getName(),
-      'person'      => $process->getPersonFullname(),
-      'status'      => $process->getStatusDescription(),
-      'unit'        => $process->getUnitNumber(),
-      'queueAction' => $process->getQueueActionDescription(),
-      'createdAt'   => $process->getCreatedAt(),
-      'updatedAt'   => $process->getUpdatedAt(),
-    ];
-  }
 }

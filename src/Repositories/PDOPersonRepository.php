@@ -8,7 +8,13 @@ class PDOPersonRepository extends PDOAbstraction
   {
     $this->beginTransaction();
 
-    $sql = "SELECT id, fullname FROM persons ORDER BY fullname";
+    $sql = "SELECT 
+              p.id, 
+              p.fullname 
+            FROM 
+              persons p 
+            ORDER BY 
+              fullname";
 
     $persons = $this->runSQL([
       'return'     => true,

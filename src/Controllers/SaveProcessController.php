@@ -3,6 +3,7 @@
 namespace VolkLms\Poc\Controllers;
 
 use PDO;
+use VolkLms\Poc\Exceptions\BadRequestException;
 use VolkLms\Poc\Models\Person;
 use VolkLms\Poc\Models\Process;
 use VolkLms\Poc\Models\QueueAction;
@@ -10,7 +11,6 @@ use VolkLms\Poc\Models\Status;
 use VolkLms\Poc\Models\Unit;
 use VolkLms\Poc\Repositories\PDOProcessRepository;
 use VolkLms\Poc\Web\Request;
-use VolkLms\Poc\Web\Response;
 
 class SaveProcessController implements Controller 
 {
@@ -24,28 +24,30 @@ class SaveProcessController implements Controller
 
     $processRepository = new PDOProcessRepository($db);
 
+    // updateing
     if ($processId) {
       if (!isset($statusId) || !is_numeric($statusId)) {
-        Response::statusCode(400)::json([ 'message' => 'process status id is required' ]);
+        throw new BadRequestException('process status id is required');
       }
       $process = $processRepository->findById($processId);
       $process = Process::changeStatus($process, $statusId);
 
     } else {
+      // creating
       if (!isset($name) || !strlen($name)) {
-        Response::statusCode(400)::json([ 'message' => 'process name is required' ]);
+        throw new BadRequestException('process name is required');
       }
       if (!isset($personId) || !is_numeric($personId)) {
-        Response::statusCode(400)::json([ 'message' => 'process person id is required' ]);
+        throw new BadRequestException('process person id is required');
       }
       if (!isset($unitId) || !is_numeric($unitId)) {
-        Response::statusCode(400)::json([ 'message' => 'process unit id is required' ]);
+        throw new BadRequestException('process unit id is required');
       }
       if (!isset($statusId) || !is_numeric($statusId)) {
-        Response::statusCode(400)::json([ 'message' => 'process status id is required' ]);
+        throw new BadRequestException('process status id is required');
       }
       if (!isset($queueActionId) || !is_numeric($queueActionId)) {
-        Response::statusCode(400)::json([ 'message' => 'process queue action id is required' ]);
+        throw new BadRequestException('process queue action id is required');
       }
 
       $process = Process::createProcess([
@@ -60,7 +62,7 @@ class SaveProcessController implements Controller
     $process = $processRepository->createOrUpdate($process);
 
     if ($process) {
-      header("Location: /processos/cadastro?processId=" . $process->getId() . "&test=". $statusId);
+      header("Location: /processos/cadastro?processId=" . $process->getId());
     }
   }
 }

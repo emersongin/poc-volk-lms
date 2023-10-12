@@ -136,4 +136,18 @@ class Process
     return $this->updatedAt;
   }
 
+  public static function toDto(Process $process): array
+  {
+    return [
+      'id'          => $process->getId(),
+      'name'        => $process->getName(),
+      'person'      => $process->getPersonFullname(),
+      'status'      => $process->getStatusDescription(),
+      'unit'        => $process->getUnitNumber(),
+      'queueAction' => $process->getQueueActionDescription(),
+      'createdAt'   => $process->getCreatedAt(),
+      'updatedAt'   => $process->getUpdatedAt(),
+    ];
+  }
+
 }
