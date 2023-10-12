@@ -33,7 +33,9 @@ abstract class PDOAbstraction
     {
         $connect = $this->connection;
         $query = $connect->prepare($data['sql']);
+
         $query->execute($data['parameters']);
+        
         if ($data['return']) {
             if ($data['multiple']) {
                 return $query->fetchAll(PDO::FETCH_ASSOC);

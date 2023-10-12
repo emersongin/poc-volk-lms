@@ -4,7 +4,7 @@ namespace VolkLms\Poc\Repositories;
 
 class PDOUnitRepository extends PDOAbstraction
 {
-  public function all(): array
+  public function findAll(): array
   {
     $this->beginTransaction();
 

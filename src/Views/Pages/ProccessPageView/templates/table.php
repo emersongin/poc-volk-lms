@@ -16,16 +16,7 @@
   <div class="min-h-100" style="min-height: 300px; max-height: 300px; overflow-y: auto;">
     <table class="table table-striped table-bordered table-responsive">
       <tbody class="table-group-divider">
-        <tr>
-          <th scope="row">1</th>
-          <td scope="row">Mark</td>
-          <td scope="row">Otto</td>
-          <td scope="row">@mdo</td>
-          <td scope="row">Mark</td>
-          <td scope="row">Otto</td>
-          <td scope="row">@mdo</td>
-          <td scope="row">Otto</td>
-        </tr>
+        {{rows}}
       </tbody>
     </table>
   </div>

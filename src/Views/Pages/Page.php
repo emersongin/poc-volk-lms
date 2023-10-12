@@ -4,7 +4,7 @@ namespace VolkLms\Poc\Views\Pages;
 
 abstract class Page
 {
-  protected string $templateGlobalPath = ABS_PATH . '/src/views/templates';
+  protected string $templateGlobalPath = ABS_PATH . '/src/Views/templates';
 
   function renderTemplate($templateFile, $data) {
     if (file_exists($templateFile)) {

@@ -3,11 +3,7 @@
 namespace VolkLms\Poc\Controllers;
 
 use PDO;
-use VolkLms\Poc\Models\Person;
 use VolkLms\Poc\Models\Process;
-use VolkLms\Poc\Models\QueueAction;
-use VolkLms\Poc\Models\Status;
-use VolkLms\Poc\Models\Unit;
 use VolkLms\Poc\Repositories\PDOProcessRepository;
 use VolkLms\Poc\Views\Pages\ProccessPageView\ProccessPageView;
 use VolkLms\Poc\Web\Request;
@@ -15,22 +11,47 @@ use VolkLms\Poc\Web\Response;
 
 class ProcessesPageController implements Controller 
 {
-  public function handle(Request $request, PDO $db) {
-      
+  public function handle(Request $request, PDO $db) 
+  {
     $processRepository = new PDOProcessRepository($db);
 
-    $persons = $processRepository->all();
-      // $process = Process::createProcess([
-      //   'name' => 'novo processo',
-      //   'person' => new Person(1, 'emerson andrey'),
-      //   'status' => new Status(1, 'cancelado'),
-      //   'unit' => new Unit(1, '11111'),
-      //   'queueAction' => new QueueAction(1, 'algum nome')
-      // ]);
+    $searchParam = $request->getParam('search') ?? '';
+    $currentPage = $request->getParam('page') ?? 1;
+    $take = $request->getParam('take') ?? 20;
+    $skip = ($take * ($currentPage - 1));
+    $totalItems = $processRepository->count([
+      'searchParam' => $searchParam
+    ]);
+    $totalPages = ceil($totalItems / $take);
 
-      $page = new ProccessPageView();
+    $processes = $processRepository->findAll([
+      'searchParam' => $searchParam,
+      'offset'      => $skip,
+      'limit'       => $take
+    ]);
+    $paginationParams = [
+      'totalItems'  => $totalItems,
+      'totalPages'  => $totalPages,
+      'currentPage' => $currentPage,
+      'searchParam' => $searchParam
+    ];
 
-      // Response::statusCode(200)::html($page->output($persons));
-      Response::statusCode(200)::json($persons);
+    $page = new ProccessPageView();
+    $output = $page->output($processes, $paginationParams);
+    Response::statusCode(200)::html($output);
+  }
+
+  private function mapProcessDto(Process $process)
+  {
+    return [
+      'id'          => $process->getId(),
+      'name'        => $process->getName(),
+      'person'      => $process->getPersonFullname(),
+      'status'      => $process->getStatusDescription(),
+      'unit'        => $process->getUnitNumber(),
+      'queueAction' => $process->getQueueActionDescription(),
+      'createdAt'   => $process->getCreatedAt(),
+      'updatedAt'   => $process->getUpdatedAt(),
+    ];
   }
 }

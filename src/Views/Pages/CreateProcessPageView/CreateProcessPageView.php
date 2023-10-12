@@ -2,57 +2,69 @@
 
 namespace VolkLms\Poc\Views\Pages\CreateProcessPageView;
 
+use VolkLms\Poc\Models\Process;
 use VolkLms\Poc\Views\Pages\Page;
 
 class CreateProcessPageView extends Page {
   private string $templateLocalPath = ABS_PATH . '/src/views/Pages/CreateProcessPageView/templates';
 
-  private function renderPersonSelectOptions(array $persons)
+  private function renderPersonSelectOptions(array $persons, int | null $id)
   {
     $options = '';
     if(count($persons)) {
       foreach ($persons as $key => $person) {
-        $options .= "<option value='{$person['id']}'>{$person['fullname']}</option>";
+        $selected = $id == $person['id'] ? 'selected' : '';
+        $options .= "<option value='{$person['id']}' {$selected}>{$person['fullname']}</option>";
       }
     }
     return $options;
   }
 
-  private function renderUnitSelectOptions(array $units)
+  private function renderUnitSelectOptions(array $units, int | null $id)
   {
     $options = '';
     if(count($units)) {
       foreach ($units as $key => $unit) {
-        $options .= "<option value='{$unit['id']}'>{$unit['number']}</option>";
+        $selected = $id == $unit['id'] ? 'selected' : '';
+        $options .= "<option value='{$unit['id']}' {$selected}>{$unit['number']}</option>";
       }
     }
     return $options;
   }
 
-  private function renderStatusSelectOptions(array $status)
+  private function renderStatusSelectOptions(array $status, int | null $id)
   {
     $options = '';
     if(count($status)) {
       foreach ($status as $key => $state) {
-        $options .= "<option value='{$state['id']}'>{$state['description']}</option>";
+        $selected = $id == $state['id'] ? 'selected' : '';
+        $options .= "<option value='{$state['id']}' {$selected}>{$state['description']}</option>";
       }
     }
     return $options;
   }
 
-  private function renderActionSelectOptions(array $status)
+  private function renderActionSelectOptions(array $actions, int | null $id)
   {
     $options = '';
-    if(count($status)) {
-      foreach ($status as $key => $state) {
-        $options .= "<option value='{$state['id']}'>{$state['description']}</option>";
+    if(count($actions)) {
+      foreach ($actions as $key => $action) {
+        $selected = $id == $action['id'] ? 'selected' : '';
+        $options .= "<option value='{$action['id']}' {$selected}>{$action['description']}</option>";
       }
     }
     return $options;
   }
 
-  public function output(array $data) 
+  public function output(array $data, Process | null $process) 
   {
+    $processId = isset($process) ? $process->getId() : null;
+    $processName = isset($process) ? $process->getName() : null;
+    $processPersonId = isset($process) ? $process->getPersonId() : null;
+    $processUnitId = isset($process) ? $process->getUnitId() : null;
+    $processStatusId = isset($process) ? $process->getStatusId() : null;
+    $processActionId = isset($process) ? $process->getQueueActionId() : null;
+
     $headerTitle = 'Fila de processos';
 
     $pageHeader = $this->renderTemplate($this->templateGlobalPath . '/header.php', [
@@ -60,23 +72,27 @@ class CreateProcessPageView extends Page {
     ]);
 
     $breadcrumb = file_get_contents($this->templateLocalPath . '/breadcrumb.php');
+    $integrationButton = file_get_contents($this->templateLocalPath . '/integration-button.php');
     $header = $this->renderTemplate($this->templateLocalPath . '/header.php', [
       'breadcrumb' => $breadcrumb,
-      'integration' => ''
+      'integration' => $processId ? $integrationButton : ''
     ]);
 
-    $personOptions = $this->renderPersonSelectOptions($data['persons']);
-    $unitOptions = $this->renderUnitSelectOptions($data['units']);
-    $statusOptions = $this->renderStatusSelectOptions($data['status']);
-    $queueActionOptions = $this->renderActionSelectOptions($data['actions']);
+    $personOptions = $this->renderPersonSelectOptions($data['persons'], $processPersonId);
+    $unitOptions = $this->renderUnitSelectOptions($data['units'], $processUnitId);
+    $statusOptions = $this->renderStatusSelectOptions($data['status'], $processStatusId);
+    $queueActionOptions = $this->renderActionSelectOptions($data['actions'], $processActionId);
 
     $form = file_get_contents($this->templateLocalPath . '/form.php');
     $content = $this->renderTemplate($this->templateLocalPath . '/content.php', [
       'form' => $form,
+      'processId' => $processId ?? '',
+      'name' => $processName ?? '',
       'personOptions' => $personOptions,
       'unitOptions' => $unitOptions,
       'statusOptions' => $statusOptions,
       'queueActionOptions' => $queueActionOptions,
+      'disabled' => $processId ? 'disabled' : ''
     ]);
 
     $body = file_get_contents($this->templateGlobalPath . '/body.php');

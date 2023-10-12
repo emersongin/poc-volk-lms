@@ -5,13 +5,13 @@ namespace VolkLms\Poc\Web;
 class Response 
 {
 
-  static function statusCode(int $code): Response
+  public static function statusCode(int $code): Response
   {
     http_response_code($code);
     return new self();
   }
 
-  static function json($data)
+  public static function json($data)
   {
     $statusCode = http_response_code();
     if ($statusCode !== 204) {
@@ -20,12 +20,19 @@ class Response
     }
   }
 
-  static function html($data)
+  public static function html($data)
   {
     $statusCode = http_response_code();
     if ($statusCode !== 204) {
-      echo json_encode($data);
+      echo $data;
     }
+  }
+
+  public static function addHeaders(array $headers) {
+    foreach ($headers as $key => $value) {
+      header("$key: $value");
+    }
+    return new self();
   }
 
 }

@@ -19,15 +19,14 @@ try {
 
   $router = new Router($connect);
 
-  $router->addRoute('/', IndexPageController::class);
-  $router->addRoute('processos', ProcessesPageController::class);
-  $router->addRoute('processos/cadastro', CreateProcessPageController::class);
-  $router->addRoute('processos/save', SaveProcessController::class);
+  $router->get('/', IndexPageController::class);
+  $router->get('processos', ProcessesPageController::class);
+  $router->get('processos/cadastro', CreateProcessPageController::class);
+  $router->post('processos/cadastro', SaveProcessController::class);
 
   $router->route();
-
-
 
 } catch (PDOException $e) {
   echo "Erro na conexão: " . $e->getMessage();
 }
+exit;

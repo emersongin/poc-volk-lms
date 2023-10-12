@@ -11,22 +11,139 @@ use VolkLms\Poc\Web\Response;
 
 class PDOProcessRepository extends PDOAbstraction
 {
-  public function all(): array
+  private function mapProcess($dbProcess)
+  {
+    return Process::createProcessWithId([
+      'id'          => $dbProcess['id'],
+      'name'        => $dbProcess['name'],
+      'person'      => new Person($dbProcess['person_id'], $dbProcess['person_fullname']),
+      'status'      => new Status($dbProcess['unit_id'], $dbProcess['unit_number']),
+      'unit'        => new Unit($dbProcess['status_id'], $dbProcess['status_description']),
+      'queueAction' => new QueueAction($dbProcess['queue_action_id'], $dbProcess['queue_action_description']),
+      'createdAt'   => $dbProcess['created_at'],
+      'updatedAt'   => $dbProcess['updated_at'],
+    ]);
+  }
+  
+  public function count(array $filters): int
   {
     $this->beginTransaction();
 
-    $sql = "SELECT * FROM persons";
+    $sql = 
+      "SELECT
+        COUNT(*) as total
+      FROM processes p
+      WHERE
+        (p.id = :search_param OR p.name LIKE CONCAT('%', :search_param, '%'))
+      ORDER BY 
+        p.created_at DESC";
 
-    $persons = $this->runSQL([
+    $dbProcesses = $this->runSQL([
+      'return'     => true,
+      'multiple'   => false,
+      'sql'        => $sql,
+      'parameters' => [
+        'search_param' => $filters['searchParam'] ?? NULL,
+      ]
+    ]);
+    $this->commit();
+    return $dbProcesses['total'];
+  }
+
+  public function findAll(array $filters): array
+  {
+    $this->beginTransaction();
+
+    if (isset($filters['offset'])) $offset = (int) $filters['offset'];
+    if (isset($filters['limit'])) $limit = (int) $filters['limit'];
+
+    $sql = 
+      "SELECT
+        p.id,
+        p.person_id,
+        ps.fullname as person_fullname,
+        p.unit_id,
+        u.number as unit_number,
+        p.status_id,
+        s.description as status_description,
+        p.queue_action_id,
+        q.description as queue_action_description,
+        p.name,
+        p.created_at,
+        p.updated_at
+      FROM processes p
+      JOIN persons ps ON ps.id = p.person_id
+      JOIN units u ON u.id = p.unit_id
+      JOIN status s ON s.id = p.status_id
+      JOIN queue_actions q ON q.id = p.queue_action_id
+      WHERE
+        (p.id = :search_param OR p.name LIKE CONCAT('%', :search_param, '%'))
+      ORDER BY 
+        p.created_at DESC
+      LIMIT {$limit} 
+      OFFSET {$offset}";
+
+    $dbProcesses = $this->runSQL([
       'return'     => true,
       'multiple'   => true,
       'sql'        => $sql,
-      'parameters' => []
+      'parameters' => [
+        'search_param' => $filters['searchParam'] ?? NULL,
+      ]
+    ]);
+    $this->commit();
+    return array_map([$this, 'mapProcess'], $dbProcesses);
+  }
+
+  public function findById(int $id): Process | null
+  {
+    $this->beginTransaction();
+
+    $sql = 
+      "SELECT
+        p.id,
+        p.person_id,
+        ps.fullname as person_fullname,
+        p.unit_id,
+        u.number as unit_number,
+        p.status_id,
+        s.description as status_description,
+        p.queue_action_id,
+        q.description as queue_action_description,
+        p.name,
+        p.created_at,
+        p.updated_at
+      FROM processes p
+      JOIN persons ps ON ps.id = p.person_id
+      JOIN units u ON u.id = p.unit_id
+      JOIN status s ON s.id = p.status_id
+      JOIN queue_actions q ON q.id = p.queue_action_id
+      WHERE
+        p.id = :id";
+
+    $dbProcess = $this->runSQL([
+      'return'     => true,
+      'multiple'   => false,
+      'sql'        => $sql,
+      'parameters' => [
+        'id' => $id
+      ]
     ]);
 
     $this->commit();
 
-    return $persons;
+    if (!$dbProcess) return null;
+
+    return Process::createProcessWithId([
+      'id'          => $dbProcess['id'],
+      'name'        => $dbProcess['name'],
+      'person'      => new Person($dbProcess['person_id'], $dbProcess['person_fullname']),
+      'status'      => new Status($dbProcess['unit_id'], $dbProcess['unit_number']),
+      'unit'        => new Unit($dbProcess['status_id'], $dbProcess['status_description']),
+      'queueAction' => new QueueAction($dbProcess['queue_action_id'], $dbProcess['queue_action_description']),
+      'createdAt'  => $dbProcess['created_at'],
+      'updatedAt'  => $dbProcess['updated_at'],
+    ]);
   }
 
   public function createOrUpdate(Process $process): Process
@@ -35,6 +152,11 @@ class PDOProcessRepository extends PDOAbstraction
       $this->beginTransaction();
 
       $id = $process->getId();
+      $name = $process->getName();
+      $personId = $process->getPersonId();
+      $unitId = $process->getUnitId();
+      $statusId = $process->getStatusId();
+      $queueActionId = $process->getQueueActionId();
   
       if (!$id) {
         $sql = 
@@ -52,14 +174,8 @@ class PDOProcessRepository extends PDOAbstraction
             :status_id,
             :queue_action_id,
             :name
-          );";
-  
-        $name = $process->getName();
-        $personId = $process->getPersonId();
-        $unitId = $process->getUnitId();
-        $statusId = $process->getStatusId();
-        $queueActionId = $process->getQueueActionId();
-  
+          )";
+
         $this->runSQL([
           'return'     => false,
           'multiple'   => false,
@@ -81,7 +197,33 @@ class PDOProcessRepository extends PDOAbstraction
           'unit'        => new Unit($statusId, ''),
           'queueAction' => new QueueAction($queueActionId, '')
         ]);
-      } 
+
+      } else {
+        $sql = 
+          "UPDATE processes
+          SET
+              person_id = :new_person_id,
+              unit_id = :new_unit_id,
+              status_id = :new_status_id,
+              queue_action_id = :new_queue_action_id,
+              name = :new_name
+          WHERE
+              id = :process_id";
+
+          $this->runSQL([
+            'return'     => false,
+            'multiple'   => false,
+            'sql'        => $sql,
+            'parameters' => [
+              'new_person_id'       => $personId,
+              'new_unit_id'         => $unitId,
+              'new_status_id'       => $statusId,
+              'new_queue_action_id' => $queueActionId,
+              'new_name'            => $name,
+              'process_id'          => $id
+            ]
+          ]);
+      }
       $this->commit();
 
       return $process;

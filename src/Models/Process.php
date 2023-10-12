@@ -4,26 +4,32 @@ namespace VolkLms\Poc\Models;
 
 class Process 
 {
-  private int $id = 0 | NULL;
+  private int $id = 0;
   private string $name;
   private Person $person;
   private Status $status;
   private Unit $unit;
   private QueueAction $queueAction;
   private IntegrationQueue $integrationQueue;
+  private string $createdAt = '';
+  private string $updatedAt = '';
 
   private function __construct(
     string $name,
     Person $person,
     Status $status,
     Unit $unit,
-    QueueAction $queueAction
+    QueueAction $queueAction,
+    string | null $createdAt = null,
+    string | null $updatedAt = null
   ) {
     $this->name = $name;
     $this->person = $person;
     $this->status = $status;
     $this->unit = $unit;
     $this->queueAction = $queueAction;
+    $this->$createdAt = date("d/m/Y H:i:s", strtotime($createdAt ?? date("Y-m-d H:i:s")));
+    $this->$updatedAt = date("d/m/Y H:i:s", strtotime($updatedAt ?? date("Y-m-d H:i:s")));
   }
 
   static public function createProcess($data): Process 
@@ -33,7 +39,9 @@ class Process
       $data['person'],
       $data['status'],
       $data['unit'],
-      $data['queueAction']
+      $data['queueAction'],
+      $data['createdAt'] ?? null,
+      $data['updatedAt'] ?? null
     );
     return $process;
   }
@@ -49,6 +57,12 @@ class Process
   {
     $process = Process::createProcessWithId($data);
     $process->integrationQueue = $data['integrationQueue']; 
+    return $process;
+  }
+
+  static public function changeStatus(Process $process, int $statusId): Process
+  {
+    $process->status = new Status($statusId, '');
     return $process;
   }
 
@@ -110,6 +124,16 @@ class Process
   public function getIntegrationActionNumber(): int
   {
     return $this->integrationQueue->getActionNumber();
+  }
+
+  public function getCreatedAt(): string
+  {
+    return $this->createdAt;
+  }
+
+  public function getUpdatedAt(): string
+  {
+    return $this->updatedAt;
   }
 
 }
