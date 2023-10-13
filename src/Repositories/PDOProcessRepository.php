@@ -98,7 +98,7 @@ class PDOProcessRepository extends PDOAbstraction
       WHERE
         (p.id = :search_param OR p.name LIKE CONCAT('%', :search_param, '%'))
       ORDER BY 
-        p.created_at DESC
+        id DESC
       LIMIT {$limit} 
       OFFSET {$offset}";
 

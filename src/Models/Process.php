@@ -40,8 +40,8 @@ class Process
       $data['status'],
       $data['unit'],
       $data['queueAction'],
-      $data['createdAt'],
-      $data['updatedAt']
+      $data['createdAt'] ?? null,
+      $data['updatedAt'] ?? null
     );
     return $process;
   }
