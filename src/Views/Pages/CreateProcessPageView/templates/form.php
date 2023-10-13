@@ -57,7 +57,7 @@
     </div>
   </div>
   <input type="hidden" name="processId" value="{{processId}}">
-  <div class="d-flex gap-2 py-2 bg-body-secondary">
+  <div class="d-flex gap-2 p-2 bg-body-secondary">
     <button type="submit" class="btn btn-success">Gravar</button>
     <a href="/processos/cadastro">
       <button type="submit" class="btn btn-primary" disabled>Novo</button>

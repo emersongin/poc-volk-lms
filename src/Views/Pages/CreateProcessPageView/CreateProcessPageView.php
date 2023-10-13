@@ -74,7 +74,7 @@ class CreateProcessPageView extends Page {
       $integrationUpdateAt = $process->getQueueIntegration() ? $process->getQueueIntegrationUpdatedAt() : null;
     }
 
-    $headerTitle = 'process';
+    $headerTitle = 'Processo';
     $styles = '';
     $pageHeader = $this->renderTemplate($this->templateGlobalPath . '/header.php', [
       'headerTitle' => $headerTitle,
