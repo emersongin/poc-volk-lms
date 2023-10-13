@@ -116,24 +116,24 @@ class Process
     return $this->queueAction->getDescription();
   }
 
-  public function getQueueIntegrationId(): int
+  public function getQueueIntegrationId(): int | null
   {
-    return $this->queueIntegration->getQueueId();
+    return $this->queueIntegration ? $this->queueIntegration->getQueueId() : null;
   }
 
-  public function getQueueIntegrationStatusId(): int
+  public function getQueueIntegrationStatusId(): int | null
   {
-    return $this->queueIntegration->getStatusId();
+    return $this->queueIntegration ? $this->queueIntegration->getStatusId() : null;
   }
 
-  public function getQueueIntegrationActionId(): int
+  public function getQueueIntegrationActionId(): int | null
   {
-    return $this->queueIntegration->getActionId();
+    return $this->queueIntegration ? $this->queueIntegration->getActionId() : null;
   }
 
-  public function getQueueIntegrationUpdatedAt(): string
+  public function getQueueIntegrationUpdatedAt(): string | null
   {
-    return $this->queueIntegration->getUpdatedAt();
+    return $this->queueIntegration ? $this->queueIntegration->getUpdatedAt() : null;
   }
 
   public function getCreatedAt(): string

@@ -4,6 +4,7 @@ namespace VolkLms\Poc\Controllers;
 
 use PDO;
 use VolkLms\Poc\Exceptions\BadGatewayException;
+use VolkLms\Poc\Exceptions\NotFoundException;
 use VolkLms\Poc\Exceptions\UnauthorizedException;
 use VolkLms\Poc\Models\Process;
 use VolkLms\Poc\Models\QueueIntegration;
@@ -19,6 +20,10 @@ class IntegrationVolkLMSController implements Controller
     $processId = $request->getParam('processId');
     $repository = new PDOProcessRepository($db);
     $process = $repository->findById($processId);
+
+    if (!$process) {
+      throw new NotFoundException('unauthorized service');
+    }
 
     // auth response schema
     // {
@@ -43,7 +48,7 @@ class IntegrationVolkLMSController implements Controller
       throw new UnauthorizedException('unauthorized service');
     }
 
-    $token = $auth['access_token'];
+    $token = $auth['result']['access_token'];
     $queueId = $process->getQueueIntegrationId();
 
     if ($queueId) {

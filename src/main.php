@@ -7,6 +7,7 @@ use VolkLms\Poc\Web\Router;
 use VolkLms\Poc\Controllers\ProcessesPageController;
 use VolkLms\Poc\Controllers\RemoveProcessController;
 use VolkLms\Poc\Controllers\SaveProcessController;
+use VolkLms\Poc\Exceptions\BadGatewayException;
 use VolkLms\Poc\Exceptions\BadRequestException;
 use VolkLms\Poc\Exceptions\DomainException;
 use VolkLms\Poc\Exceptions\NotFoundException;
@@ -52,9 +53,10 @@ try {
     Response::statusCode($error->getStatusCode())::json([ 'erroMessage' => $error->getMessage() ]);
   } elseif ($error instanceof NotFoundException) {
     Response::statusCode(404)::json([ 'erroMessage' => "404 not found" ]);
+  } elseif ($error instanceof BadGatewayException) {
+    Response::statusCode($error->getStatusCode())::json([ 'erroMessage' => $error->getMessage() ]);
   } else {
     Response::statusCode(500)::json([ 'erroMessage' => 'internal server error' ]);
-    var_dump($error->getMessage());
   }
 }
 exit;
