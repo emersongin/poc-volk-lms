@@ -3,7 +3,6 @@
 namespace VolkLms\Poc\Controllers;
 
 use PDO;
-use VolkLms\Poc\Models\Process;
 use VolkLms\Poc\Repositories\PDOProcessRepository;
 use VolkLms\Poc\Views\Pages\ProccessPageView\ProccessPageView;
 use VolkLms\Poc\Web\Request;
